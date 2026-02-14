@@ -1,1 +1,47 @@
-import streamlit as st\nimport numpy as np\nimport pandas as pd\nimport gzip\nimport matplotlib.pyplot as plt\n\nst.title('AetherFold 4D Streamlit Web Application')\n\n# File upload\nuploaded_file = st.file_uploader("Upload your data file", type=["csv", "txt"])\nif uploaded_file is not None:\n    data = pd.read_csv(uploaded_file)\n    st.write(data)\n\n    # Compression Logic (dummy example)\n    compressed_data = gzip.compress(data.encode('utf-8'))\n\n    # Visualization Placeholder\n    st.subheader("4D Visualization")\n    # (Implement visualization here)\n\n    # Analytics Dashboard Placeholder\n    st.subheader("Analytics Dashboard")\n    # (Implement dashboard statistics here)\n\n    # Download functionality\n    st.download_button("Download Compressed Data", compressed_data, "data.gz")\n\n# Additional code can be added here
+import streamlit as st
+import numpy as np
+import pandas as pd
+import plotly.express as px
+
+# Title of the app
+st.title('AetherFold 4D Visualization App')
+
+# Upload file section
+uploaded_file = st.file_uploader('Upload your data file (CSV)', type='csv')
+
+if uploaded_file is not None:
+    df = pd.read_csv(uploaded_file)
+    st.write('Data successfully loaded!')
+    st.write(df.head())
+
+    # 4D Visualization section
+    st.subheader('4D Visualization')
+    if 'x' in df.columns and 'y' in df.columns and 'z' in df.columns and 'color' in df.columns:
+        fig = px.scatter_3d(df, x='x', y='y', z='z', color='color', size='size', hover_name='name')
+        st.write(fig)
+    else:
+        st.warning('Data requires x, y, z, color, and size columns for visualization.')
+
+    # Analytics section
+    st.subheader('Analytics Dashboard')
+    st.write('Summary Statistics:')
+    st.write(df.describe())
+
+    # Download functionality
+    def convert_df(df):
+        return df.to_csv().encode('utf-8')
+
+    csv = convert_df(df)
+    st.download_button(
+        label='Download data as CSV',
+        data=csv,
+        file_name='processed_data.csv',
+        mime='text/csv',
+    )
+else:
+    st.info('Awaiting CSV file upload...')
+
+# Footer
+st.markdown("---")
+st.markdown("### AetherFold 4D Visualization App")
+st.markdown("Developed by eugenvalentine123" )
